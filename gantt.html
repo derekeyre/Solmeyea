@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Gantt Chart</title>
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; padding:20px; background:#f7f9fb}
+    h1{font-size:20px;margin-bottom:10px}
+    .chart{background:#fff;border:1px solid #e1e8ee;padding:16px;border-radius:8px}
+    .grid{display:grid;grid-template-columns:200px 1fr;gap:12px;align-items:start}
+    .labels{display:flex;flex-direction:column;gap:10px}
+    .labels .row{height:28px;display:flex;align-items:center}
+    .timeline{position:relative;overflow:auto;border-left:1px dashed #eee;padding-left:12px}
+    .timeline .ruler{display:flex;gap:8px;position:sticky;top:0;background:#fff;padding-bottom:8px}
+    .ruler .cell{min-width:80px;padding:4px 6px;font-size:12px;color:#666;border-right:1px solid #f0f3f5}
+    .rowTrack{height:28px;position:relative;margin-bottom:6px}
+    .bar{position:absolute;top:0;height:28px;border-radius:4px;color:#fff;display:flex;align-items:center;padding-left:8px;font-size:13px}
+    .bar.task{background:linear-gradient(90deg,#3b82f6,#06b6d4)}
+    .bar.milestone{background:#ef4444}
+    .legend{margin-top:12px;font-size:13px;color:#444}
+    pre{background:#f1f5f9;padding:8px;border-radius:6px;overflow:auto}
+    @media (max-width:700px){.grid{grid-template-columns:1fr} .labels{order:2}}
+  </style>
+</head>
+<body>
+  <h1>Gantt Chart — Example</h1>
+  <div class="chart">
+    <div style="margin-bottom:8px;color:#444">This is a simple, self-contained Gantt chart. Paste in your tasks below or edit the file in the repo.</div>
+    <div class="grid">
+      <div class="labels" id="labels"></div>
+      <div class="timeline" id="timeline">
+        <div class="ruler" id="ruler"></div>
+        <div id="tracks"></div>
+      </div>
+    </div>
+
+    <div class="legend">Legend: <span style="display:inline-block;width:12px;height:12px;background:#3b82f6;margin:0 6px;border-radius:2px;vertical-align:middle"></span> Task &nbsp; <span style="display:inline-block;width:12px;height:12px;background:#ef4444;margin:0 6px;border-radius:2px;vertical-align:middle"></span> Milestone</div>
+  </div>
+
+  <script>
+    // Example tasks - replace or extend these.
+    // date format: YYYY-MM-DD
+    const tasks = [
+      {id:1,name:'Project kickoff',start:'2025-11-01',end:'2025-11-03',type:'task'},
+      {id:2,name:'Design',start:'2025-11-04',end:'2025-11-10',type:'task'},
+      {id:3,name:'Prototype',start:'2025-11-08',end:'2025-11-15',type:'task'},
+      {id:4,name:'User testing',start:'2025-11-16',end:'2025-11-20',type:'task'},
+      {id:5,name:'Release',start:'2025-11-22',end:'2025-11-22',type:'milestone'}
+    ];
+
+    function parseDate(d){return new Date(d + 'T00:00:00Z')}
+
+    const minDate = new Date(Math.min(...tasks.map(t=>parseDate(t.start))));
+    const maxDate = new Date(Math.max(...tasks.map(t=>parseDate(t.end))));
+    // add 1 day padding
+    maxDate.setUTCDate(maxDate.getUTCDate()+1);
+
+    const dayCount = Math.round((maxDate - minDate)/(1000*60*60*24));
+
+    const ruler = document.getElementById('ruler');
+    for(let i=0;i<dayCount;i++){
+      const d = new Date(minDate);
+      d.setUTCDate(d.getUTCDate()+i);
+      const cell = document.createElement('div');
+      cell.className='cell';
+      cell.textContent = d.toISOString().slice(0,10);
+      cell.style.minWidth='80px';
+      ruler.appendChild(cell);
+    }
+
+    const labels = document.getElementById('labels');
+    const tracks = document.getElementById('tracks');
+
+    tasks.forEach(t=>{
+      const rowLabel = document.createElement('div');
+      rowLabel.className='row';
+      rowLabel.textContent = t.name;
+      labels.appendChild(rowLabel);
+
+      const track = document.createElement('div');
+      track.className='rowTrack';
+
+      const totalWidth = dayCount * 80; // matches minWidth of cells
+      track.style.minWidth = totalWidth + 'px';
+
+      const startOffset = Math.round((parseDate(t.start) - minDate)/(1000*60*60*24));
+      const duration = Math.max(1, Math.round((parseDate(t.end) - parseDate(t.start))/(1000*60*60*24)) + 1);
+
+      const leftPx = startOffset * 80;
+      const widthPx = duration * 80;
+
+      const bar = document.createElement('div');
+      bar.className = 'bar ' + (t.type==='milestone'?'milestone':'task');
+      bar.style.left = leftPx + 'px';
+      bar.style.width = widthPx + 'px';
+      bar.textContent = t.type==='milestone' ? '🔔 ' + t.name : t.name;
+
+      track.appendChild(bar);
+      tracks.appendChild(track);
+    });
+
+    // make timeline horizontally scrollable and keep labels aligned
+    const timeline = document.getElementById('timeline');
+    timeline.addEventListener('scroll', ()=>{
+      labels.style.transform = `translateX(${ -timeline.scrollLeft }px)`;
+    });
+  </script>
+
+  <p style="margin-top:12px;color:#666;font-size:13px">To make your own: edit this file in the GitHub repo (or add tasks array via JS). To publish via GitHub Pages, put this file in /docs or root and enable Pages in repository Settings → Pages.</p>
+</body>
+</html>
