@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MEY Product Validation Roadmap - Gantt Chart</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .gantt-wrapper {
+            padding: 30px;
+            overflow-x: auto;
+        }
+        
+        .gantt-chart {
+            min-width: 1200px;
+        }
+        
+        .timeline {
+            display: grid;
+            grid-template-columns: 250px repeat(24, 1fr);
+            gap: 0;
+            margin-bottom: 5px;
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 10;
+            padding: 10px 0;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .timeline-label {
+            font-weight: 600;
+            color: #666;
+            padding: 10px;
+            text-align: center;
+            border-right: 1px solid #e0e0e0;
+        }
+        
+        .week {
+            text-align: center;
+            font-size: 11px;
+            font-weight: 600;
+            color: #764ba2;
+            padding: 10px 5px;
+            border-right: 1px solid #f0f0f0;
+        }
+        
+        .phase-section {
+            margin-bottom: 25px;
+        }
+        
+        .phase-header {
+            background: #f8f9fa;
+            padding: 12px 15px;
+            font-weight: 700;
+            color: #333;
+            border-left: 5px solid #667eea;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .investment {
+            font-size: 14px;
+            color: #28a745;
+            font-weight: 600;
+        }
+        
+        .task-row {
+            display: grid;
+            grid-template-columns: 250px repeat(24, 1fr);
+            gap: 0;
+            margin-bottom: 8px;
+            align-items: center;
+            min-height: 50px;
+        }
+        
+        .task-label {
+            padding: 10px 15px;
+            font-size: 13px;
+            color: #555;
+            border-right: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            min-height: 50px;
+        }
+        
+        .task-bar {
+            height: 35px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            font-size: 11px;
+            font-weight: 600;
+            color: white;
+            margin: 2px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .task-bar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+        }
+        
+        .phase1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .phase2 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .phase3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .phase4 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+        .phase5 { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+        .phase6 { background: linear-gradient(135deg, #30cfd0 0%, #330867 100%); }
+        
+        .gate {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+        
+        .legend {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .legend h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .legend-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .legend-color {
+            width: 40px;
+            height: 25px;
+            border-radius: 5px;
+        }
+        
+        .metrics {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+        }
+        
+        .metric-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .metric-title {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        .metric-value {
+            font-size: 14px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧬 MEY Product Validation Roadmap</h1>
+            <p>European B2C Microalgae Market - 6-Month Timeline</p>
+        </div>
+        
+        <div class="gantt-wrapper">
+            <div class="gantt-chart">
+                <!-- Timeline Header -->
+                <div class="timeline">
+                    <div class="timeline-label">Activities</div>
+                    <div class="week">W1</div>
+                    <div class="week">W2</div>
+                    <div class="week">W3</div>
+                    <div class="week">W4</div>
+                    <div class="week">W5</div>
+                    <div class="week">W6</div>
+                    <div class="week">W7</div>
+                    <div class="week">W8</div>
+                    <div class="week">W9</div>
+                    <div class="week">W10</div>
+                    <div class="week">W11</div>
+                    <div class="week">W12</div>
+                    <div class="week">W13</div>
+                    <div class="week">W14</div>
+                    <div class="week">W15</div>
+                    <div class="week">W16</div>
+                    <div class="week">W17</div>
+                    <div class="week">W18</div>
+                    <div class="week">W19</div>
+                    <div class="week">W20</div>
+                    <div class="week">W21</div>
+                    <div class="week">W22</div>
+                    <div class="week">W23</div>
+                    <div class="week">W24</div>
+                </div>
+                
+                <!-- Phase 1 -->
+                <div class="phase-section">
+                    <div class="phase-header">
+                        <span>📊 Phase 1: Secondary Research & Market Landscape</span>
+                        <span class="investment">€2,000-3,000</span>
+                    </div>
+                    
+                    <div class="task-row">
+                        <div class="task-label">Desk Research & Competitive Analysis</div>
+                        <div class="task-bar phase1" style="grid-column: 2 / 3;">Week 1</div>
+                    </div>
+                    
+                    <div class="task-row">
+                        <div class="task-label">Industry Reports & Trend Analysis</div>
+                        <div class="task-bar phase1" style="grid-column: 3 / 5;">Weeks 2-3</div>
+                    </div>
+                    
+                    <div class="task-row">
+                        <div class="task-label">🚦 Stage Gate 1: TAM >€10M Check</div>
+                        <div class="task-bar gate" style="grid-column: 5 / 6;">Gate 1</div>
+                    </div>
+                </div>
+                
+                <!-- Phase 2 -->
+                <div class="phase-section">
+                    <div class="phase-header">
+                        <span>👥 Phase 2: Expert Interviews & Industry Validation</span>
+                        <span class="investment">€3,000-5,000</span>
+                    </div>
+                    
+                    <div class="task-row">
+                        <div class="task-label">Expert Interview Planning</div>
+                        <div class="task-bar phase2" style="grid-column: 5 / 6;">Week 4</div>
+                    </div>
+                    
+                    <div class="task-row">
+                        <div class="task-label">Conduct Expert Interviews (10-12)</div>
+                        <div class="task-bar phase2" style="grid-column: 6 / 8;">Weeks 5-6</div>
+                    </div>
+                    
+                    <div class="task-row">
+                        <div class="task-label">🚦 Stage Gate 2: 70%+ Expert Validation</div>
+                        <div class="task-bar gate" style="grid-column: 8 / 9;">Gate 2</div>
+                    </div>
+                </div>
+                
+                <!-- Phase 3 -->
+                <div class="phase-section">
+                    <div class="phase-header">
+                        <span>🔍 Phase 3: Customer Discovery & Problem Validation</span>
+                        <span class="investment">€2,000-3,000</span>
+                    </div>
+                    
+                    <div class="task-row">
+                        <div class="task-label">Exploratory Customer Research (30 interviews)</div>
+                        <div class="task-bar phase3" style="grid-column: 8 / 10;">Weeks 7-8</div>
+                    </div>
+                    
+                    <div class="task-row">
+                        <div class="task-label">Online Survey Development & Deployment</div>
+                        <div class="task-bar phase3" style="grid-column: 10 / 12;">Weeks 9-10</div>
+                    </div>
+                    
+                    <div class="task-row">
+                        <div class="task-label">🚦 Stage Gate 3: 15%+ Purchase Intent</div>
+                        <div class="task-bar gate" style="grid-column: 12 / 13;">Gate 3</div>
+                    </div>
+                </div>
+                
+                <!-- Phase 4 -->
+                <div class="phase-section">
+                    <div class="phase-header">
+                        <span>🚀 Phase 4: Landing Page Testing & Demand Validation</span>
+                        <span class="investment">€5,000-8,000</span>
+                    </div>
+                    
+                    <div class="task-row">
+                        <div class="task-label">Landing Page Development (3-4 variants)</div>
+                        <div class="task-bar phase4" style="grid-column: 12 / 14;">Weeks 11-12</div>
+                    </div>
+                    
+                    <div class="task-row">
+                        <div class="task-label">Traffic Generation & A/B Testing</div>
+                        <div class="task-bar phase4" style="grid-column: 14 / 18;">Weeks 13-16</div>
+                    </div>
+                    
+                    <div class="task-row">
+                        <div class="task-label">🚦 Stage Gate 4: 100+ Pre-orders, CAC <€30</div>
+                        <div class="task-bar gate" style="grid-column: 18 / 19;">Gate 4</div>
+                    </div>
+                </div>
+                
+                <!-- Phase 5 -->
+                <div class="phase-section">
+                    <div class="phase-header">
+                        <span>🧪 Phase 5: Product-Market Fit Testing</span>
+                        <span class="investment">€8,000-12,000</span>
+                    </div>
+                    
+                    <div class="task-row">
+                        <div class="task-label">Prototype Development & Testing (50-100 units)</div>
+                        <div class="task-bar phase5" style="grid-column: 18 / 20;">Weeks 17-18</div>
+                    </div>
+                    
+                    <div class="task-row">
+                        <div class="task-label">Beta Customer Program (50 early adopters)</div>
+                        <div class="task-bar phase5" style="grid-column: 20 / 22;">Weeks 19-20</div>
+                    </div>
+                </div>
+                
+                <!-- Phase 6 -->
+                <div class="phase-section">
+                    <div class="phase-header">
+                        <span>✅ Phase 6: Go/No-Go Decision & Launch Planning</span>
+                        <span class="investment">€3,000-5,000</span>
+                    </div>
+                    
+                    <div class="task-row">
+                        <div class="task-label">Data Synthesis & Business Case</div>
+                        <div class="task-bar phase6" style="grid-column: 22 / 24;">Weeks 21-22</div>
+                    </div>
+                    
+                    <div class="task-row">
+                        <div class="task-label">Stakeholder Alignment & Launch Decision</div>
+                        <div class="task-bar phase6" style="grid-column: 24 / 26;">Weeks 23-24</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Legend -->
+            <div class="legend">
+                <h3>📋 Project Summary</h3>
+                <div class="legend-items">
+                    <div class="legend-item">
+                        <div class="legend-color phase1"></div>
+                        <span>Phase 1: Market Landscape</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color phase2"></div>
+                        <span>Phase 2: Expert Validation</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color phase3"></div>
+                        <span>Phase 3: Customer Discovery</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color phase4"></div>
+                        <span>Phase 4: Demand Validation</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color phase5"></div>
+                        <span>Phase 5: PMF Testing</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color phase6"></div>
+                        <span>Phase 6: Go/No-Go</span>
+                    </div>
+                </div>
+                
+                <div class="metrics">
+                    <div class="metric-card">
+                        <div class="metric-title">Total Investment Range</div>
+                        <div class="metric-value">€23,000 - €36,000 (Recommended: €30,000 + 20% contingency)</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Duration</div>
+                        <div class="metric-value">24 Weeks (6 Months)</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Critical Success Metrics</div>
+                        <div class="metric-value">TAM >€10M, 70%+ Expert Validation, 15%+ Purchase Intent, NPS >30</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Methodology</div>
+                        <div class="metric-value">Stanford "Test & Learn" + Lean Startup Principles</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
